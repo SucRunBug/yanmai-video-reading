@@ -1,6 +1,6 @@
-# yanmai-video-reading
+# 视频读取
 
-鄢麦视频读取 Skill：读取用户指定的抖音、小红书和本地视频，通过目标核对、媒体下载、截图查看与音频转写，提取有依据的内容。
+视频读取 Skill：读取用户指定的抖音、小红书和本地视频，通过目标核对、媒体下载、截图查看与音频转写，提取有依据的内容。
 
 用于核心内容提取、逐字稿、画面分析，以及判断视频中的事实、案例和演示方法能否作为创作素材。读取结果区分作者陈述、已核实事实与推断，支持独立表达。
 
@@ -93,6 +93,6 @@ python3 -m unittest discover -s tests -v
 
 ## 来源与许可
 
-小红书方法参考本人仓库 [SucRunBug/home-food 的 video-reading.md](https://github.com/SucRunBug/home-food/blob/78f7c7ae0c840b21fd43d207dca60266ceadaaa6/references/video-reading.md)，固定版本便于核对来源。这里将其公开手机页、目标 ID 核对、抽帧与失败处理经验整理为通用视频读取流程，配套脚本在本仓库实现。
+小红书方法参考 [SucRunBug/home-food 的 video-reading.md](https://github.com/SucRunBug/home-food/blob/78f7c7ae0c840b21fd43d207dca60266ceadaaa6/references/video-reading.md)，固定版本便于核对来源。这里将其公开手机页、目标 ID 核对、抽帧与失败处理经验整理为通用视频读取流程，配套脚本在本仓库实现。
 
 本仓库采用 [MIT License](LICENSE)。
