@@ -1,0 +1,21 @@
+# Local media, signed URLs and reading results
+/sources/
+/output/
+/tmp/
+*.mp4
+*.m4a
+*.wav
+*.mp3
+*.mov
+*.webm
+*.part
+*.html
+*.log
+.env
+.env.*
+cookies*
+*cookie*.json
+__pycache__/
+*.py[cod]
+.venv/
+.DS_Store
