@@ -1,4 +1,4 @@
 interface:
   display_name: "视频读取"
-  short_description: "读取抖音、小红书与本地视频，核对字幕、画面和音频并处理常见失败"
-  default_prompt: "使用 $yanmai-video-reading 读取我提供的视频，核对目标身份并提取核心内容。"
+  short_description: "读取指定视频，按讲述顺序整理逐字稿、相关线索与画面备注"
+  default_prompt: "使用 $yanmai-video-reading 分析我提供的视频，先贴逐字稿，再在对应段落下挖掘线索、记录画面，未核实处简标存疑。"
