@@ -1,6 +1,6 @@
 # 视频读取
 
-视频读取 Skill：读取用户指定的抖音、小红书和本地视频，通过目标核对、媒体下载、截图查看与音频转写，提取有依据的内容。
+视频读取 Skill：读取用户指定的抖音、小红书、B 站和本地视频，通过目标核对、媒体下载、截图查看与音频转写，提取有依据的内容。
 
 用于逐字稿、视频分析和资料挖掘。默认围绕指定视频，按讲述顺序先贴逐字稿，再把相关线索和画面备注放在对应段落下；未核实处直接标“XX 存疑”。
 
@@ -40,10 +40,11 @@ git clone https://github.com/SucRunBug/yanmai-video-reading.git \
 | --- | --- | --- |
 | 抖音 | 浏览器观察指定视频实际媒体请求；处理 `other` 类型资源和音视频分轨 | 可观察资源 / 网络的浏览器、curl、FFmpeg、ffprobe |
 | 小红书 | 解析同一笔记的公开手机分享页，匹配 ID，再下载当前媒体 | Python 3.9+、允许的网络访问、ffprobe |
+| B 站 | 公开接口核对 BV / CID，取得当前 DASH 音视频并合并，记录字幕可用性 | Python 3.9+、允许的网络访问、curl、FFmpeg、ffprobe |
 | 本地画面 | 完整抽帧、实际 PTS 时间记录、联系表、指定时间补帧 | Python 3.9+、FFmpeg、ffprobe、Agent 的图片查看能力 |
 | 音频 | 提取单声道 16 kHz WAV，再选择可用加速后端转写 | 实际可用的 ASR 工具；原始稿与清洗稿分别保留 |
 
-三个命令行脚本仅使用 Python 标准库。语音模型不随仓库提供，也不会自动安装；Apple Silicon 优先检查 Metal / MLX，NVIDIA 优先检查 CUDA。
+四个命令行脚本仅使用 Python 标准库。语音模型不随仓库提供，也不会自动安装；Apple Silicon 优先检查 Metal / MLX，NVIDIA 优先检查 CUDA。
 
 ## 脚本用法
 
@@ -55,6 +56,10 @@ python3 scripts/fetch_xhs_video.py --check
 
 # 小红书：每次从当前分享页取地址
 python3 scripts/fetch_xhs_video.py '小红书分享链接' --output sources/xhs-example
+
+# B 站：核对同一 BV / CID，获取音视频并合并
+python3 scripts/fetch_bilibili_video.py 'B站完整链接或BV号' \
+  --output sources/bilibili-example
 
 # 本地视频：生成完整帧、联系表、时间记录和音频
 python3 scripts/prepare_video.py sources/xhs-example/video.mp4 \
@@ -69,7 +74,7 @@ python3 scripts/download_douyin_media.py \
   --request sources/douyin-request.json --output sources/douyin-example
 ```
 
-抖音请求 JSON 字段与浏览器步骤见 [抖音方法](references/douyin.md)。所有生成命令使用新建或空输出目录，避免覆盖已有材料。可通过 `--ffmpeg` / `--ffprobe` 指定当前机器的工具路径。
+抖音请求 JSON 字段与浏览器步骤见 [抖音方法](references/douyin.md)。B 站接口路径与分 P 用法见 [B 站方法](references/bilibili.md)。所有生成命令使用新建或空输出目录，避免覆盖已有材料。可通过 `--ffmpeg` / `--ffprobe` 指定当前机器的工具路径。
 
 `prepare_video.py` 在 `media.json` 记录真实抽样帧的 PTS、指定时间实际取得的帧，以及每张联系表按从左到右、从上到下排列的帧文件。联系表方便定位，字幕和数字要打开完整单帧。它不做 OCR、语音转写或内容理解；`recognition_performed` 始终为 `false`，生成之后需要 Agent 实际读图 / 转写。
 
@@ -82,7 +87,7 @@ python3 scripts/download_douyin_media.py \
 - 页面字段和浏览器接口可能变化；私密、删除、登录和验证码限制需要相应授权或本地材料。
 - 只采样部分画面就说明部分范围；音频转写不能代替视觉细节分析。
 
-详见 [小红书方法](references/xiaohongshu.md)、[音频转写](references/transcription.md) 和 [失败处理](references/troubleshooting.md)。
+详见 [B 站方法](references/bilibili.md)、[小红书方法](references/xiaohongshu.md)、[音频转写](references/transcription.md) 和 [失败处理](references/troubleshooting.md)。
 
 `sources/`、`output/`、媒体、原始页面、日志和常见凭据文件已在 `.gitignore` 中排除。公开仓库只提供读取方法与工具；使用者仍需检查自己的提交内容。
 
@@ -94,6 +99,13 @@ python3 scripts/download_douyin_media.py \
 - 使用已有的本地抖音视频测试抽帧与音频提取，实际打开约 8 秒画面核对 `CAO / Chief Agent Officer`。此次脚本验证没有重新浏览抖音。
 - 小红书公开示例“肥牛滑蛋”下载成功，匹配笔记 ID `67f4e33e000000001b025337`，约 42.18 秒、720 × 1280。实际打开联系表与约 6 秒完整帧，看到“先打入3个鸡蛋”。
 - 抖音浏览器资源观察、分轨下载和 MLX 转写方法来自先前实际操作；新合并脚本使用合成媒体测试。未重新对抖音做在线下载验证，也未在 Windows / Linux 上实测。
+
+2026-10-12 补充 B 站路径并验证：
+
+- Skill 格式检查通过；23 项离线测试通过，新增测试覆盖 BV / 分 P / CID 核对、实际格式选择、媒体域名、签名地址不泄漏、字幕为空与接口失败、音视频合并和输出防覆盖。
+- 新增 `fetch_bilibili_video.py` 对同一公开视频 `BV1LmvzB4EFp` 在线运行成功：CID 35027553948，H.264 852 × 480，AAC 音频，合并后 441.203 秒；公开字幕状态正确记录为 `empty`。
+- 本次会话的完整音频 MLX / Metal 转写、联系表与关键单帧核对已完成；具体读取范围和错误处理见 [B 站方法](references/bilibili.md)。新增脚本本身只负责获取媒体和字幕可用性，不执行 ASR 或读图。
+- 仍未对分 P 视频、登录内容、Windows / Linux 做在线实测；分 P 选择使用合成响应验证。
 
 测试不保证平台未来接口不变。测试媒体和截图留在本地，不随开源仓库上传。
 

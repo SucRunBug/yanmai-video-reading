@@ -1,6 +1,6 @@
 ---
 name: yanmai-video-reading
-description: 读取用户指定的抖音、小红书或本地视频，核对目标、获取媒体、抽帧与转写。视频分析和资料挖掘默认按讲述顺序整理逐字稿、对应线索与画面备注，未核实内容简标存疑；也适用于单独转写与读取失败处理。
+description: 读取用户指定的抖音、小红书、B 站或本地视频，核对目标、获取媒体、抽帧与转写。视频分析和资料挖掘默认按讲述顺序整理逐字稿、对应线索与画面备注，未核实内容简标存疑；也适用于单独转写与读取失败处理。
 ---
 
 # 视频读取
@@ -18,6 +18,7 @@ description: 读取用户指定的抖音、小红书或本地视频，核对目�
 
 - **抖音链接**：读 [references/douyin.md](references/douyin.md)。优先观察指定页面实际加载的媒体请求；视频与音频可能分轨。需要下载时使用 `scripts/download_douyin_media.py`。
 - **小红书链接**：读 [references/xiaohongshu.md](references/xiaohongshu.md)。优先解析同一笔记的公开手机分享页；使用 `scripts/fetch_xhs_video.py`。
+- **B 站链接 / BV 号**：读 [references/bilibili.md](references/bilibili.md)。先用公开信息接口核对 BV 与目标分 P 的 CID，获取当前 DASH 音视频并合并；使用 `scripts/fetch_bilibili_video.py`。公开字幕为空时继续完整音频转写。
 - **本地视频 / 已下载媒体**：直接检查轨道和时长，使用 `scripts/prepare_video.py`。不用重新打开平台。
 
 脚本路径相对本 Skill 根目录。先找到本机 Python 3.9+、FFmpeg 和 ffprobe；后两者支持传入实际路径。不要复制旧电脑的代理端口、Cookie、模型路径或媒体签名地址。网络操作走当前环境允许的工具与权限流程。
